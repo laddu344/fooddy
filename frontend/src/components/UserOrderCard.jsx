@@ -17,6 +17,8 @@ function UserOrderCard({ data }) {
     const [specialInstructions, setSpecialInstructions] = useState(data.specialInstructions || '')
     const [otpMessage, setOtpMessage] = useState("")
     const [otpLoading, setOtpLoading] = useState(false)
+    const [comments, setComments] = useState({})
+    
 
     const formatDate = (dateString) => {
         const date = new Date(dateString)
@@ -46,6 +48,8 @@ function UserOrderCard({ data }) {
 
     const handleItemRating = async (shopOrder, itemId, stars) => {
         try {
+            const key = `${itemId}-item`
+            if (entityRatings[key]) return
             await ratingAPI.submitRating({
                 orderId: data._id,
                 shopOrderId: shopOrder._id,
@@ -53,7 +57,7 @@ function UserOrderCard({ data }) {
                 targetId: itemId,
                 stars
             })
-            setEntityRatings(prev => ({ ...prev, [`${itemId}-item`]: stars }))
+            setEntityRatings(prev => ({ ...prev, [key]: stars }))
         } catch (error) {
             console.log('submit item rating error', error?.response?.data || error)
         }
@@ -61,6 +65,8 @@ function UserOrderCard({ data }) {
 
     const handleEntityRating = async (shopOrder, type, stars) => {
         try {
+            const key = `${shopOrder._id}-${type}`
+            if (entityRatings[key]) return
             const targetId = type === 'shop' ? shopOrder.shop._id : shopOrder.assignedDeliveryBoy?._id
             if (!targetId) return
             await ratingAPI.submitRating({
@@ -68,16 +74,17 @@ function UserOrderCard({ data }) {
                 shopOrderId: shopOrder._id,
                 type,
                 targetId,
-                stars
+                stars,
+                comment: comments[key] || ''
             })
-            setEntityRatings(prev => ({ ...prev, [`${shopOrder._id}-${type}`]: stars }))
+            setEntityRatings(prev => ({ ...prev, [key]: stars }))
         } catch (error) {
             console.log('submit rating error', error?.response?.data || error)
         }
     }
 
     const handleDeleteOrder = async () => {
-        if (!window.confirm('Delete this order permanently?')) {
+        if (!window.confirm('Hide this order from your dashboard?')) {
             return
         }
         setIsDeleting(true)
@@ -85,7 +92,7 @@ function UserOrderCard({ data }) {
             await orderAPI.deleteOrder(data._id)
             const updatedOrders = myOrders.filter(order => order._id !== data._id)
             dispatch(setMyOrders(updatedOrders))
-            alert('Order deleted successfully')
+            alert('Order hidden from your dashboard')
         } catch (error) {
             console.error('Error deleting order:', error)
             alert(error.response?.data?.message || 'Failed to delete order. Please try again.')
@@ -118,7 +125,6 @@ function UserOrderCard({ data }) {
                 return order
             })
             dispatch(setMyOrders(updatedOrders))
-            alert('Order cancelled successfully')
         } catch (error) {
             console.error('Error cancelling order:', error)
             alert(error.response?.data?.message || 'Failed to cancel order. Please try again.')
@@ -212,13 +218,11 @@ function UserOrderCard({ data }) {
                                                 key={star}
                                                 className={`text-lg ${ (entityRatings[`${item.item._id}-item`] || 0) >= star ? 'text-yellow-400' : 'text-gray-400'}`}
                                                 onClick={() => handleItemRating(shopOrder, item.item._id, star)}
+                                                disabled={Boolean(entityRatings[`${item.item._id}-item`])}
                                             >★</button>
                                         ))}
                                     </div>
                                 )}
-
-
-
                             </div>
                         ))}
                     </div>
@@ -245,10 +249,51 @@ function UserOrderCard({ data }) {
                                 <p className='text-sm font-semibold text-indigo-800 mb-1'>Rate Restaurant</p>
                                 <div className='flex space-x-1'>
                                     {[1,2,3,4,5].map(star => (
-                                        <button key={star} className={`text-xl ${ (entityRatings[`${shopOrder._id}-shop`] || 0) >= star ? 'text-yellow-400' : 'text-gray-300' }`}
-                                            onClick={() => handleEntityRating(shopOrder, 'shop', star)}>★</button>
+                                        <button key={star} className={`text-xl ${ (entityRatings[`${shopOrder._id}-shop`] || 0) >= star ? 'text-yellow-400' : 'text-gray-300' } ${ entityRatings[`${shopOrder._id}-shop`] ? 'cursor-not-allowed opacity-50' : ''}`}
+                                            onClick={() => !entityRatings[`${shopOrder._id}-shop`] && handleEntityRating(shopOrder, 'shop', star)}
+                                            disabled={Boolean(entityRatings[`${shopOrder._id}-shop`])}
+                                        >★</button>
                                     ))}
                                 </div>
+                                <input
+                                    type='text'
+                                    placeholder='Write a review (optional)'
+                                    value={comments[`${shopOrder._id}-shop`] || ''}
+                                    onChange={(e) => setComments(prev => ({ ...prev, [`${shopOrder._id}-shop`]: e.target.value }))}
+                                    className='mt-2 w-full border rounded px-2 py-1 text-sm'
+                                    disabled={Boolean(entityRatings[`${shopOrder._id}-shop`])}
+                                />
+                                {entityRatings[`${shopOrder._id}-shop`] && (
+                                    <p className='text-xs text-gray-500 mt-1'>You already rated this restaurant.</p>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Rate Delivery Boy after delivery */}
+                    {shopOrder.status === 'delivered' && shopOrder.assignedDeliveryBoy && (
+                        <div className='mt-3'>
+                            <div className='p-3 bg-gradient-to-r from-yellow-50 to-orange-50 border rounded-lg'>
+                                <p className='text-sm font-semibold text-orange-800 mb-1'>Rate Delivery</p>
+                                <div className='flex space-x-1'>
+                                    {[1,2,3,4,5].map(star => (
+                                        <button key={star} className={`text-xl ${ (entityRatings[`${shopOrder._id}-deliveryBoy`] || 0) >= star ? 'text-yellow-500' : 'text-gray-300' } ${ entityRatings[`${shopOrder._id}-deliveryBoy`] ? 'cursor-not-allowed opacity-50' : ''}`}
+                                            onClick={() => !entityRatings[`${shopOrder._id}-deliveryBoy`] && handleEntityRating(shopOrder, 'deliveryBoy', star)}
+                                            disabled={Boolean(entityRatings[`${shopOrder._id}-deliveryBoy`])}
+                                        >★</button>
+                                    ))}
+                                </div>
+                                <input
+                                    type='text'
+                                    placeholder='Share feedback about delivery (optional)'
+                                    value={comments[`${shopOrder._id}-deliveryBoy`] || ''}
+                                    onChange={(e) => setComments(prev => ({ ...prev, [`${shopOrder._id}-deliveryBoy`]: e.target.value }))}
+                                    className='mt-2 w-full border rounded px-2 py-1 text-sm'
+                                    disabled={Boolean(entityRatings[`${shopOrder._id}-deliveryBoy`])}
+                                />
+                                {entityRatings[`${shopOrder._id}-deliveryBoy`] && (
+                                    <p className='text-xs text-gray-500 mt-1'>You already rated this delivery.</p>
+                                )}
                             </div>
                         </div>
                     )}
@@ -366,13 +411,7 @@ function UserOrderCard({ data }) {
                             {isCancelling ? 'Cancelling...' : 'Cancel Order'}
                         </button>
                     )}
-                    <button 
-                        className='bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm disabled:opacity-50' 
-                        onClick={handleDeleteOrder}
-                        disabled={isDeleting}
-                    >
-                        {isDeleting ? 'Deleting...' : 'Delete'}
-                    </button>
+
                     <button className='bg-[#ff4d2d] hover:bg-[#e64526] text-white px-4 py-2 rounded-lg text-sm' onClick={() => navigate(`/track-order/${data._id}`)}>Track Order</button>
                 </div>
             </div>

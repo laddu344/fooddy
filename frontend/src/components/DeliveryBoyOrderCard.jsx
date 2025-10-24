@@ -40,22 +40,22 @@ function DeliveryBoyOrderCard({ data, onOrderUpdate }) {
     }
 
     const handleDeleteOrder = async () => {
-        if (!window.confirm('Delete this order permanently?')) {
-            return
-        }
-        setIsDeleting(true)
-        try {
-            await orderAPI.deleteOrder(data._id)
-            const updatedOrders = myOrders.filter(order => order._id !== data._id)
-            dispatch(setMyOrders(updatedOrders))
-            alert('Order deleted successfully')
-        } catch (error) {
-            console.error('Error deleting order:', error)
-            alert(error.response?.data?.message || 'Failed to delete order. Please try again.')
-        } finally {
-            setIsDeleting(false)
-        }
-    }
+        if (!window.confirm('Hide this order from your dashboard?')) {
+             return
+         }
+         setIsDeleting(true)
+         try {
+             await orderAPI.deleteOrder(data._id)
+             const updatedOrders = myOrders.filter(order => order._id !== data._id)
+             dispatch(setMyOrders(updatedOrders))
+            alert('Order hidden from your dashboard')
+         } catch (error) {
+             console.error('Error deleting order:', error)
+             alert(error.response?.data?.message || 'Failed to delete order. Please try again.')
+         } finally {
+             setIsDeleting(false)
+         }
+     }
 
     return (
         <div className='bg-white rounded-lg shadow p-4 space-y-4'>
@@ -109,13 +109,7 @@ function DeliveryBoyOrderCard({ data, onOrderUpdate }) {
                     <span className='text-sm'>
                         Status: <span className='font-semibold capitalize text-[#ff4d2d]'>{data.shopOrders.status}</span>
                     </span>
-                    <button 
-                        className='bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded text-xs disabled:opacity-50' 
-                        onClick={handleDeleteOrder}
-                        disabled={isDeleting}
-                    >
-                        {isDeleting ? 'Deleting...' : 'Delete'}
-                    </button>
+
                 </div>
                 <span className='text-sm font-bold text-gray-800'>
                     Total: ₹{data.shopOrders.subtotal}

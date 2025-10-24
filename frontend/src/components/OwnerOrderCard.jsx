@@ -32,7 +32,7 @@ function OwnerOrderCard({ data }) {
     }
 
     const handleDeleteOrder = async () => {
-        if (!window.confirm('Delete this order permanently?')) {
+        if (!window.confirm('Hide this order from your dashboard?')) {
             return
         }
         setIsDeleting(true)
@@ -40,7 +40,7 @@ function OwnerOrderCard({ data }) {
             await orderAPI.deleteOrder(data._id)
             const updatedOrders = myOrders.filter(order => order._id !== data._id)
             dispatch(setMyOrders(updatedOrders))
-            alert('Order deleted successfully')
+            alert('Order hidden from your dashboard')
         } catch (error) {
             console.error('Error deleting order:', error)
             alert(error.response?.data?.message || 'Failed to delete order. Please try again.')
@@ -190,13 +190,7 @@ function OwnerOrderCard({ data }) {
             }
 
             <div className='flex justify-between items-center font-bold text-gray-800 text-sm mt-4 pt-3 border-t border-gray-100'>
-                <button 
-                    className='bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-xs disabled:opacity-50 transition-colors duration-200' 
-                    onClick={handleDeleteOrder}
-                    disabled={isDeleting}
-                >
-                    {isDeleting ? 'Deleting...' : 'Delete Order'}
-                </button>
+
                 <span className='text-lg font-bold text-[#ff4d2d]'>Total: ₹{data?.shopOrders?.subtotal || 0}</span>
             </div>
         </div>
