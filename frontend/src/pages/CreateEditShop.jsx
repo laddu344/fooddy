@@ -1,129 +1,209 @@
-import React from 'react'
+import React, { useState } from "react";
 import { IoIosArrowRoundBack } from "react-icons/io";
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { FaUtensils } from "react-icons/fa";
-import { useState } from 'react';
-import { setMyShopData } from '../redux/ownerSlice';
-import { ClipLoader } from 'react-spinners';
-import { shopAPI } from '../api';
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { FaStore } from "react-icons/fa";
+import { ClipLoader } from "react-spinners";
+import { setMyShopData } from "../redux/ownerSlice";
+import { shopAPI } from "../api";
+
 function CreateEditShop() {
-    const navigate = useNavigate()
-    const { myShopData } = useSelector(state => state.owner)
-    const { currentCity,currentState,currentAddress } = useSelector(state => state.user)
-    const [name,setName]=useState(myShopData?.name || "")
-     const [address,setAddress]=useState(myShopData?.address || currentAddress)
-     const [city,setCity]=useState(myShopData?.city || currentCity)
-       const [state,setState]=useState(myShopData?.state || currentState)
-       const [frontendImage,setFrontendImage]=useState(myShopData?.image || null)
-       const [backendImage,setBackendImage]=useState(null)
-       const [loading,setLoading]=useState(false)
-       // UPI details
-       const [upiVpa, setUpiVpa] = useState(myShopData?.upiVpa || "")
-       const [upiPayeeName, setUpiPayeeName] = useState(myShopData?.upiPayeeName || "")
-       const dispatch=useDispatch()
-       const handleImage=(e)=>{
-        const file=e.target.files[0]
-        setBackendImage(file)
-        setFrontendImage(URL.createObjectURL(file))
-       }
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { myShopData } = useSelector((state) => state.owner);
+  const { currentCity, currentState, currentAddress } = useSelector(
+    (state) => state.user
+  );
 
-       const handleSubmit=async (e)=>{
-        e.preventDefault()
-        setLoading(true)
-        try {
-           const formData=new FormData()
-           formData.append("name",name) 
-           formData.append("city",city) 
-           formData.append("state",state) 
-           formData.append("address",address) 
-           if(backendImage){
-            formData.append("image",backendImage)
-           }
-           // Append UPI fields
-           if (upiVpa) formData.append("upiVpa", upiVpa)
-           if (upiPayeeName) formData.append("upiPayeeName", upiPayeeName)
-           const result = await shopAPI.createEdit(formData)
-           dispatch(setMyShopData(result.data))
-          setLoading(false)
-          navigate("/")
-        } catch (error) {
-            console.log(error)
-            setLoading(false)
-        }
-       }
-    return (
-        <div className='flex justify-center flex-col items-center p-6 bg-gradient-to-br from-orange-50 relative to-white min-h-screen'>
-            <div className='absolute top-[20px] left-[20px] z-[10] mb-[10px]' onClick={() => navigate("/")}>
-                <IoIosArrowRoundBack size={35} className='text-[#ff4d2d]' />
+  const [name, setName] = useState(myShopData?.name || "");
+  const [address, setAddress] = useState(myShopData?.address || currentAddress);
+  const [city, setCity] = useState(myShopData?.city || currentCity);
+  const [state, setState] = useState(myShopData?.state || currentState);
+  const [frontendImage, setFrontendImage] = useState(myShopData?.image || null);
+  const [backendImage, setBackendImage] = useState(null);
+  const [upiVpa, setUpiVpa] = useState(myShopData?.upiVpa || "");
+  const [upiPayeeName, setUpiPayeeName] = useState(myShopData?.upiPayeeName || "");
+  const [loading, setLoading] = useState(false);
+
+  const handleImage = (e) => {
+    const file = e.target.files[0];
+    setBackendImage(file);
+    setFrontendImage(URL.createObjectURL(file));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("city", city);
+      formData.append("state", state);
+      formData.append("address", address);
+      if (backendImage) formData.append("image", backendImage);
+      if (upiVpa) formData.append("upiVpa", upiVpa);
+      if (upiPayeeName) formData.append("upiPayeeName", upiPayeeName);
+
+      const result = await shopAPI.createEdit(formData);
+      dispatch(setMyShopData(result.data));
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#fff2eb] via-[#ffe7db] to-[#ffd9c9] relative overflow-hidden px-4">
+      {/* Floating Blobs */}
+      <div className="absolute w-[26rem] h-[26rem] bg-[#fc8019]/25 rounded-full blur-3xl top-16 left-10 animate-pulse" />
+      <div className="absolute w-[26rem] h-[26rem] bg-[#ff2b85]/25 rounded-full blur-3xl bottom-12 right-10 animate-pulse" />
+
+      {/* Back Button */}
+      <div
+        className="absolute top-[20px] left-[20px] z-[10] mb-[10px] cursor-pointer hover:scale-110 transition-transform"
+        onClick={() => navigate("/")}
+      >
+        <IoIosArrowRoundBack size={40} className="text-[#ff2b85]" />
+      </div>
+
+      {/* Shop Card */}
+      <div className="relative w-full max-w-md bg-white/80 backdrop-blur-2xl border border-white/40 shadow-2xl rounded-3xl p-8 sm:p-10 transition-transform duration-300 hover:scale-[1.02]">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <div className="bg-[#fc8019]/20 p-5 rounded-full">
+              <FaStore className="text-[#ff2b85] w-10 h-10" />
             </div>
-
-            <div className='max-w-lg w-full bg-white shadow-xl rounded-2xl p-8 border border-orange-100'>
-                <div className='flex flex-col items-center mb-6'>
-                    <div className='bg-orange-100 p-4 rounded-full mb-4'>
-                        <FaUtensils className='text-[#ff4d2d] w-16 h-16' />
-                    </div>
-                    <div className="text-3xl font-extrabold text-gray-900">
-                        {myShopData ? "Edit Shop" : "Add Shop"}
-                    </div>
-                </div>
-                <form className='space-y-5' onSubmit={handleSubmit}>
-                    <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>Name</label>
-                        <input type="text" placeholder='Enter Shop Name' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500'
-                        onChange={(e)=>setName(e.target.value)}
-                        value={name}
-                        />
-                    </div>
-                    <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>shop Image</label>
-                        <input type="file" accept='image/*' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' onChange={handleImage}  />
-                        {frontendImage &&   <div className='mt-4'>
-                            <img src={frontendImage} alt="" className='w-full h-48 object-cover rounded-lg border'/>
-                        </div>}
-                      
-                    </div>
-                    {/* UPI Payment Details */}
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                      <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>UPI ID (VPA)</label>
-                        <input type="text" placeholder='e.g. 9390146850@ybl' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' onChange={(e)=>setUpiVpa(e.target.value)} value={upiVpa} />
-                        <p className='text-xs text-gray-500 mt-1'>Used for customer UPI payments.</p>
-                      </div>
-                      <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>Payee Name</label>
-                        <input type="text" placeholder='e.g. Charn' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' onChange={(e)=>setUpiPayeeName(e.target.value)} value={upiPayeeName} />
-                        <p className='text-xs text-gray-500 mt-1'>Shown in UPI app for confirmation.</p>
-                      </div>
-                    </div>
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-                        <div>
-                           <label className='block text-sm font-medium text-gray-700 mb-1'>City</label>
-                        <input type="text" placeholder='City' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' onChange={(e)=>setCity(e.target.value)}
-                        value={city}/> 
-                        </div>
-                        <div>
-                            <label className='block text-sm font-medium text-gray-700 mb-1'>State</label>
-                        <input type="text" placeholder='State' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' onChange={(e)=>setState(e.target.value)}
-                        value={state}/> 
-                        </div>
-                    </div>
-                    <div>
-                        <label className='block text-sm font-medium text-gray-700 mb-1'>Address</label>
-                        <input type="text" placeholder='Enter Shop Address' className='w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500' onChange={(e)=>setAddress(e.target.value)}
-                        value={address}/> 
-                    </div>
-                    <button className='w-full bg-[#ff4d2d] text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-orange-600 hover:shadow-lg transition-all duration-200 cursor-pointer' disabled={loading}>
-                        {loading?<ClipLoader size={20} color='white'/>:"Save"}
-                    
-                    </button>
-                </form>
-            </div>
-                
-                
-
+          </div>
+          <h1 className="text-4xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#fc8019] to-[#ff2b85] drop-shadow-md">
+            {myShopData ? "Edit Shop" : "Add Shop"}
+          </h1>
+          <p className="text-gray-600 text-sm mt-2 font-medium">
+            Manage your FoodWay store details 🏪
+          </p>
         </div>
-    )
+
+        {/* Form */}
+        <form className="space-y-5" onSubmit={handleSubmit}>
+          {/* Shop Name */}
+          <div>
+            <label className="block text-gray-700 font-semibold mb-1 text-sm">
+              Shop Name
+            </label>
+            <input
+              type="text"
+              placeholder="Enter shop name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fc8019] hover:border-[#ff4d2d]/60 transition-all"
+            />
+          </div>
+
+          {/* Image Upload */}
+          <div>
+            <label className="block text-gray-700 font-semibold mb-1 text-sm">
+              Shop Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImage}
+              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 focus:outline-none focus:ring-2 focus:ring-[#ff2b85] hover:border-[#ff4d2d]/60 transition-all"
+            />
+            {frontendImage && (
+              <div className="mt-4">
+                <img
+                  src={frontendImage}
+                  alt="Shop Preview"
+                  className="w-full h-48 object-cover rounded-lg border shadow-md"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* UPI Section */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1 text-sm">
+                UPI ID (VPA)
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. 9876543210@ybl"
+                value={upiVpa}
+                onChange={(e) => setUpiVpa(e.target.value)}
+                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fc8019] transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1 text-sm">
+                Payee Name
+              </label>
+              <input
+                type="text"
+                placeholder="e.g. John Doe"
+                value={upiPayeeName}
+                onChange={(e) => setUpiPayeeName(e.target.value)}
+                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#ff2b85] transition-all"
+              />
+            </div>
+          </div>
+
+          {/* Address Info */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1 text-sm">
+                City
+              </label>
+              <input
+                type="text"
+                placeholder="City"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 focus:outline-none focus:ring-2 focus:ring-[#fc8019] transition-all"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 font-semibold mb-1 text-sm">
+                State
+              </label>
+              <input
+                type="text"
+                placeholder="State"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 focus:outline-none focus:ring-2 focus:ring-[#ff2b85] transition-all"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-gray-700 font-semibold mb-1 text-sm">
+              Address
+            </label>
+            <input
+              type="text"
+              placeholder="Enter full shop address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 focus:outline-none focus:ring-2 focus:ring-[#fc8019] transition-all"
+            />
+          </div>
+
+          {/* Submit */}
+          <button
+            disabled={loading}
+            className="w-full bg-gradient-to-r from-[#fc8019] to-[#ff2b85] text-white py-3 rounded-xl font-semibold text-lg shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200 disabled:opacity-60"
+          >
+            {loading ? <ClipLoader size={22} color="white" /> : "Save"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }
 
-export default CreateEditShop
+export default CreateEditShop;
