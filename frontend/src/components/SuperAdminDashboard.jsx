@@ -389,15 +389,21 @@ const SuperAdminDashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gradient-to-br from-[#fff2eb] via-[#ffe7db] to-[#ffd9c9] relative overflow-hidden">
+            {/* Floating blobs for warm depth */}
+            <div className="absolute w-[26rem] h-[26rem] bg-[#fc8019]/25 rounded-full blur-3xl top-16 left-10 animate-pulse" />
+            <div className="absolute w-[26rem] h-[26rem] bg-[#ff2b85]/25 rounded-full blur-3xl bottom-12 right-10 animate-pulse" />
+
             {/* Header */}
-            <div className="bg-white shadow-sm border-b">
+            <div className="relative bg-white/80 backdrop-blur-2xl border-b border-white/40 shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center py-4">
-                        <h1 className="text-2xl font-bold text-gray-900">Super Admin Dashboard</h1>
+                        <h1 className="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#fc8019] to-[#ff2b85] drop-shadow-md">
+                            Super Admin Dashboard
+                        </h1>
                         <button
                             onClick={handleLogout}
-                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition duration-200"
+                            className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200"
                         >
                             Logout
                         </button>
@@ -406,9 +412,9 @@ const SuperAdminDashboard = () => {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="bg-white shadow-sm">
+            <div className="relative bg-white/80 backdrop-blur-2xl border-b border-white/40 shadow-md">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <nav className="flex space-x-8">
+                    <nav className="flex space-x-8 overflow-x-auto">
                         {[
                             { id: 'dashboard', label: 'Dashboard' },
                             { id: 'deliveryboys', label: 'Delivery Boy Approvals' },
@@ -420,10 +426,10 @@ const SuperAdminDashboard = () => {
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
-                                className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                                className={`py-4 px-2 border-b-2 font-semibold text-sm whitespace-nowrap transition-all duration-200 ${
                                     activeTab === tab.id
-                                        ? 'border-blue-500 text-blue-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                        ? 'border-[#fc8019] text-[#fc8019]'
+                                        : 'border-transparent text-gray-600 hover:text-[#ff2b85] hover:border-[#ff2b85]/30'
                                 }`}
                             >
                                 {tab.label}
@@ -434,15 +440,15 @@ const SuperAdminDashboard = () => {
             </div>
 
             {/* Content */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Messages */}
                 {error && (
-                    <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    <div className="mb-4 bg-red-100/90 backdrop-blur-sm border border-red-400 text-red-700 px-4 py-3 rounded-xl shadow-md font-medium">
                         {error}
                     </div>
                 )}
                 {success && (
-                    <div className="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                    <div className="mb-4 bg-green-100/90 backdrop-blur-sm border border-green-400 text-green-700 px-4 py-3 rounded-xl shadow-md font-medium">
                         {success}
                     </div>
                 )}
@@ -450,27 +456,27 @@ const SuperAdminDashboard = () => {
                 {/* Dashboard Overview */}
                 {activeTab === 'dashboard' && (
                     <div>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-6">Dashboard Overview</h2>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6">Dashboard Overview</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-                            <div className="bg-white p-6 rounded-lg shadow">
-                                <h3 className="text-sm font-medium text-gray-500">Total Users</h3>
-                                <p className="text-2xl font-bold text-blue-600">{dashboardStats.userCount}</p>
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 p-6 rounded-3xl shadow-2xl transition-transform duration-300 hover:scale-[1.05]">
+                                <h3 className="text-sm font-semibold text-gray-600">Total Users</h3>
+                                <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-blue-600 mt-2">{dashboardStats.userCount}</p>
                             </div>
-                            <div className="bg-white p-6 rounded-lg shadow">
-                                <h3 className="text-sm font-medium text-gray-500">Total Owners</h3>
-                                <p className="text-2xl font-bold text-green-600">{dashboardStats.ownerCount}</p>
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 p-6 rounded-3xl shadow-2xl transition-transform duration-300 hover:scale-[1.05]">
+                                <h3 className="text-sm font-semibold text-gray-600">Total Owners</h3>
+                                <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-500 to-green-600 mt-2">{dashboardStats.ownerCount}</p>
                             </div>
-                            <div className="bg-white p-6 rounded-lg shadow">
-                                <h3 className="text-sm font-medium text-gray-500">Delivery Boys</h3>
-                                <p className="text-2xl font-bold text-purple-600">{dashboardStats.deliveryBoyCount}</p>
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 p-6 rounded-3xl shadow-2xl transition-transform duration-300 hover:scale-[1.05]">
+                                <h3 className="text-sm font-semibold text-gray-600">Delivery Boys</h3>
+                                <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-purple-600 mt-2">{dashboardStats.deliveryBoyCount}</p>
                             </div>
-                            <div className="bg-white p-6 rounded-lg shadow">
-                                <h3 className="text-sm font-medium text-gray-500">Pending Owners</h3>
-                                <p className="text-2xl font-bold text-orange-600">{dashboardStats.pendingOwnerCount}</p>
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 p-6 rounded-3xl shadow-2xl transition-transform duration-300 hover:scale-[1.05]">
+                                <h3 className="text-sm font-semibold text-gray-600">Pending Owners</h3>
+                                <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#fc8019] to-[#ff2b85] mt-2">{dashboardStats.pendingOwnerCount}</p>
                             </div>
-                            <div className="bg-white p-6 rounded-lg shadow">
-                                <h3 className="text-sm font-medium text-gray-500">Categories</h3>
-                                <p className="text-2xl font-bold text-indigo-600">{dashboardStats.categoryCount}</p>
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 p-6 rounded-3xl shadow-2xl transition-transform duration-300 hover:scale-[1.05]">
+                                <h3 className="text-sm font-semibold text-gray-600">Categories</h3>
+                                <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-indigo-600 mt-2">{dashboardStats.categoryCount}</p>
                             </div>
                         </div>
                     </div>
@@ -479,33 +485,33 @@ const SuperAdminDashboard = () => {
                 {/* Delivery Boy Approvals */}
                 {activeTab === 'deliveryboys' && (
                     <div>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-6">Pending Delivery Boy Approvals</h2>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6">Pending Delivery Boy Approvals</h2>
                         {loading ? (
-                            <div className="text-center py-4">Loading...</div>
+                            <div className="text-center py-8 text-gray-600 font-medium">Loading...</div>
                         ) : pendingDeliveryBoys.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500">No pending approvals</div>
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 rounded-3xl shadow-2xl p-8 text-center text-gray-600 font-medium">No pending approvals</div>
                         ) : (
-                            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                                <ul className="divide-y divide-gray-200">
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 shadow-2xl overflow-hidden rounded-3xl">
+                                <ul className="divide-y divide-gray-200/50">
                                     {pendingDeliveryBoys.map((deliveryBoy) => (
-                                        <li key={deliveryBoy._id} className="px-6 py-4">
+                                        <li key={deliveryBoy._id} className="px-6 py-5 hover:bg-white/50 transition-colors">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <h3 className="text-lg font-medium text-gray-900">{deliveryBoy.fullName}</h3>
-                                                    <p className="text-sm text-gray-500">{deliveryBoy.email}</p>
-                                                    <p className="text-sm text-gray-500">{deliveryBoy.mobile}</p>
+                                                    <h3 className="text-lg font-bold text-gray-900">{deliveryBoy.fullName}</h3>
+                                                    <p className="text-sm text-gray-600 mt-1">{deliveryBoy.email}</p>
+                                                    <p className="text-sm text-gray-600">{deliveryBoy.mobile}</p>
                                                 </div>
-                                                <div className="flex space-x-2">
+                                                <div className="flex space-x-3">
                                                     <button
                                                         onClick={() => updateDeliveryBoyStatus(deliveryBoy._id, 'approve')}
-                                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                                                        className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200"
                                                         disabled={loading}
                                                     >
                                                         Approve
                                                     </button>
                                                     <button
                                                         onClick={() => updateDeliveryBoyStatus(deliveryBoy._id, 'reject')}
-                                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+                                                        className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200"
                                                         disabled={loading}
                                                     >
                                                         Reject
@@ -523,33 +529,33 @@ const SuperAdminDashboard = () => {
                 {/* Owner Approvals */}
                 {activeTab === 'owners' && (
                     <div>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-6">Pending Owner Approvals</h2>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6">Pending Owner Approvals</h2>
                         {loading ? (
-                            <div className="text-center py-4">Loading...</div>
+                            <div className="text-center py-8 text-gray-600 font-medium">Loading...</div>
                         ) : pendingOwners.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500">No pending approvals</div>
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 rounded-3xl shadow-2xl p-8 text-center text-gray-600 font-medium">No pending approvals</div>
                         ) : (
-                            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                                <ul className="divide-y divide-gray-200">
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 shadow-2xl overflow-hidden rounded-3xl">
+                                <ul className="divide-y divide-gray-200/50">
                                     {pendingOwners.map((owner) => (
-                                        <li key={owner._id} className="px-6 py-4">
+                                        <li key={owner._id} className="px-6 py-5 hover:bg-white/50 transition-colors">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <h3 className="text-lg font-medium text-gray-900">{owner.fullName}</h3>
-                                                    <p className="text-sm text-gray-500">{owner.email}</p>
-                                                    <p className="text-sm text-gray-500">{owner.mobile}</p>
+                                                    <h3 className="text-lg font-bold text-gray-900">{owner.fullName}</h3>
+                                                    <p className="text-sm text-gray-600 mt-1">{owner.email}</p>
+                                                    <p className="text-sm text-gray-600">{owner.mobile}</p>
                                                 </div>
-                                                <div className="flex space-x-2">
+                                                <div className="flex space-x-3">
                                                     <button
                                                         onClick={() => updateOwnerStatus(owner._id, 'approve')}
-                                                        className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                                                        className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200"
                                                         disabled={loading}
                                                     >
                                                         Approve
                                                     </button>
                                                     <button
                                                         onClick={() => updateOwnerStatus(owner._id, 'reject')}
-                                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+                                                        className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200"
                                                         disabled={loading}
                                                     >
                                                         Reject
@@ -567,31 +573,31 @@ const SuperAdminDashboard = () => {
                 {/* Categories */}
                 {activeTab === 'categories' && (
                     <div>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-6">Category Management</h2>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6">Category Management</h2>
                         
                         {/* Add Category Form */}
-                        <div className="bg-white p-6 rounded-lg shadow mb-6">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Category</h3>
+                        <div className="bg-white/80 backdrop-blur-2xl border border-white/40 p-6 rounded-3xl shadow-2xl mb-6">
+                            <h3 className="text-lg font-bold text-gray-800 mb-4">Add New Category</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <input
                                     type="text"
                                     placeholder="Category Name"
                                     value={newCategory.name}
                                     onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fc8019] hover:border-[#ff4d2d]/60 transition-all"
                                 />
                                 <input
                                     type="text"
                                     placeholder="Description"
                                     value={newCategory.description}
                                     onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
-                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fc8019] hover:border-[#ff4d2d]/60 transition-all"
                                 />
                             </div>
                             
                             {/* Image Upload Section */}
                             <div className="mt-4">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Category Image</label>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">Category Image</label>
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -602,14 +608,14 @@ const SuperAdminDashboard = () => {
                                             setCategoryImagePreview(URL.createObjectURL(file));
                                         }
                                     }}
-                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                                    className="border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 focus:outline-none focus:ring-2 focus:ring-[#fc8019] w-full transition-all"
                                 />
                                 {categoryImagePreview && (
                                     <div className="mt-2">
                                         <img 
                                             src={categoryImagePreview} 
                                             alt="Category preview" 
-                                            className="w-32 h-32 object-cover rounded-lg border"
+                                            className="w-32 h-32 object-cover rounded-2xl border-2 border-white/60 shadow-lg"
                                         />
                                     </div>
                                 )}
@@ -617,7 +623,7 @@ const SuperAdminDashboard = () => {
                             <button
                                 onClick={createCategory}
                                 disabled={loading}
-                                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+                                className="mt-4 bg-gradient-to-r from-[#fc8019] to-[#ff2b85] text-white px-6 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200 disabled:opacity-60"
                             >
                                 Add Category
                             </button>
@@ -625,10 +631,10 @@ const SuperAdminDashboard = () => {
 
                         {/* Categories List */}
                         {loading ? (
-                            <div className="text-center py-4">Loading...</div>
+                            <div className="text-center py-8 text-gray-600 font-medium">Loading...</div>
                         ) : (
-                            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                                <ul className="divide-y divide-gray-200">
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 shadow-2xl overflow-hidden rounded-3xl">
+                                <ul className="divide-y divide-gray-200/50">
                                     {categories.map((category) => (
                                         <li key={category._id} className="px-6 py-4">
                                             {editingCategory === category._id ? (
@@ -640,20 +646,20 @@ const SuperAdminDashboard = () => {
                                                             placeholder="Category Name"
                                                             value={editCategoryData.name}
                                                             onChange={(e) => setEditCategoryData({ ...editCategoryData, name: e.target.value })}
-                                                            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            className="border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fc8019] hover:border-[#ff4d2d]/60 transition-all"
                                                         />
                                                         <input
                                                             type="text"
                                                             placeholder="Description"
                                                             value={editCategoryData.description}
                                                             onChange={(e) => setEditCategoryData({ ...editCategoryData, description: e.target.value })}
-                                                            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            className="border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fc8019] hover:border-[#ff4d2d]/60 transition-all"
                                                         />
                                                     </div>
-                                                    
+
                                                     {/* Image Upload Section for Edit */}
                                                     <div>
-                                                        <label className="block text-sm font-medium text-gray-700 mb-2">Category Image</label>
+                                                        <label className="block text-sm font-semibold text-gray-700 mb-2">Category Image</label>
                                                         <input
                                                             type="file"
                                                             accept="image/*"
@@ -664,30 +670,30 @@ const SuperAdminDashboard = () => {
                                                                     setEditCategoryImagePreview(URL.createObjectURL(file));
                                                                 }
                                                             }}
-                                                            className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                                                            className="border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 focus:outline-none focus:ring-2 focus:ring-[#fc8019] w-full transition-all"
                                                         />
                                                         {editCategoryImagePreview && (
                                                             <div className="mt-2">
-                                                                <img 
-                                                                    src={editCategoryImagePreview} 
-                                                                    alt="Category preview" 
-                                                                    className="w-32 h-32 object-cover rounded-lg border"
+                                                                <img
+                                                                    src={editCategoryImagePreview}
+                                                                    alt="Category preview"
+                                                                    className="w-32 h-32 object-cover rounded-2xl border-2 border-white/60 shadow-lg"
                                                                 />
                                                             </div>
                                                         )}
                                                     </div>
-                                                    
-                                                    <div className="flex space-x-2">
+
+                                                    <div className="flex space-x-3">
                                                         <button
                                                             onClick={() => updateCategory(category._id)}
                                                             disabled={loading}
-                                                            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+                                                            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200"
                                                         >
                                                             Save
                                                         </button>
                                                         <button
                                                             onClick={cancelEditCategory}
-                                                            className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg"
+                                                            className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200"
                                                         >
                                                             Cancel
                                                         </button>
@@ -698,33 +704,33 @@ const SuperAdminDashboard = () => {
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center space-x-4">
                                                         {category.image && (
-                                                            <img 
-                                                                src={category.image} 
+                                                            <img
+                                                                src={category.image}
                                                                 alt={category.name}
-                                                                className="w-16 h-16 object-cover rounded-lg border"
+                                                                className="w-16 h-16 object-cover rounded-2xl border-2 border-white/60 shadow-md"
                                                             />
                                                         )}
                                                         <div>
-                                                            <h3 className="text-lg font-medium text-gray-900">
-                                                                {category.name} 
-                                                                <span className="text-sm text-blue-600 ml-2">
+                                                            <h3 className="text-lg font-bold text-gray-900">
+                                                                {category.name}
+                                                                <span className="text-sm text-transparent bg-clip-text bg-gradient-to-r from-[#fc8019] to-[#ff2b85] ml-2 font-semibold">
                                                                     (ID: {category.categoryId || category._id})
                                                                 </span>
                                                             </h3>
-                                                            <p className="text-sm text-gray-500">{category.description}</p>
+                                                            <p className="text-sm text-gray-600 mt-1">{category.description}</p>
                                                         </div>
                                                     </div>
-                                                    <div className="flex space-x-2">
+                                                    <div className="flex space-x-3">
                                                         <button
                                                             onClick={() => startEditCategory(category)}
-                                                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+                                                            className="bg-gradient-to-r from-[#fc8019] to-[#ff2b85] hover:from-[#ff2b85] hover:to-[#fc8019] text-white px-5 py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200"
                                                             disabled={loading}
                                                         >
                                                             Edit
                                                         </button>
                                                         <button
                                                             onClick={() => deleteCategory(category._id)}
-                                                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+                                                            className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200"
                                                             disabled={loading}
                                                         >
                                                             Delete
@@ -743,15 +749,15 @@ const SuperAdminDashboard = () => {
                 {/* User Management */}
                 {activeTab === 'users' && (
                     <div>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-6">User Management</h2>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6">User Management</h2>
                         
                         {/* Search and Filter */}
-                        <div className="bg-white p-6 rounded-lg shadow mb-6">
+                        <div className="bg-white/80 backdrop-blur-2xl border border-white/40 p-6 rounded-3xl shadow-2xl mb-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <select
                                     value={searchRole}
                                     onChange={(e) => setSearchRole(e.target.value)}
-                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 focus:outline-none focus:ring-2 focus:ring-[#fc8019] hover:border-[#ff4d2d]/60 transition-all"
                                 >
                                     <option value="all">All Roles</option>
                                     <option value="user">Users</option>
@@ -763,28 +769,28 @@ const SuperAdminDashboard = () => {
                                     placeholder="Search by name or email..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fc8019] hover:border-[#ff4d2d]/60 transition-all"
                                 />
                             </div>
                         </div>
 
                         {/* Users List */}
                         {loading ? (
-                            <div className="text-center py-4">Loading...</div>
+                            <div className="text-center py-8 text-gray-600 font-medium">Loading...</div>
                         ) : users.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500">No users found</div>
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 rounded-3xl shadow-2xl p-8 text-center text-gray-600 font-medium">No users found</div>
                         ) : (
-                            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                                <ul className="divide-y divide-gray-200">
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 shadow-2xl overflow-hidden rounded-3xl">
+                                <ul className="divide-y divide-gray-200/50">
                                     {users.map((user) => (
-                                        <li key={user._id} className="px-6 py-4">
+                                        <li key={user._id} className="px-6 py-5 hover:bg-white/50 transition-colors">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <h3 className="text-lg font-medium text-gray-900">{user.fullName}</h3>
-                                                    <p className="text-sm text-gray-500">{user.email}</p>
-                                                    <p className="text-sm text-gray-500">{user.mobile}</p>
-                                                    <div className="flex items-center space-x-4 mt-2">
-                                                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                                    <h3 className="text-lg font-bold text-gray-900">{user.fullName}</h3>
+                                                    <p className="text-sm text-gray-600 mt-1">{user.email}</p>
+                                                    <p className="text-sm text-gray-600">{user.mobile}</p>
+                                                    <div className="flex items-center space-x-3 mt-3">
+                                                        <span className={`px-3 py-1.5 text-xs font-bold rounded-full shadow-sm ${
                                                             user.role === 'user' ? 'bg-blue-100 text-blue-800' :
                                                             user.role === 'owner' ? 'bg-green-100 text-green-800' :
                                                             user.role === 'deliveryBoy' ? 'bg-purple-100 text-purple-800' :
@@ -793,7 +799,7 @@ const SuperAdminDashboard = () => {
                                                             {user.role}
                                                         </span>
                                                         {user.role === 'owner' && (
-                                                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                                            <span className={`px-3 py-1.5 text-xs font-bold rounded-full shadow-sm ${
                                                                 user.isApproved ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                                                             }`}>
                                                                 {user.isApproved ? 'Approved' : 'Pending'}
@@ -813,25 +819,25 @@ const SuperAdminDashboard = () => {
                 {/* User Types Management */}
                 {activeTab === 'usertypes' && (
                     <div>
-                        <h2 className="text-xl font-semibold text-gray-900 mb-6">User Types Management</h2>
+                        <h2 className="text-2xl font-bold text-gray-800 mb-6">User Types Management</h2>
                         
                         {/* Add User Type Form */}
-                        <div className="bg-white p-6 rounded-lg shadow mb-6">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">Add New User Type</h3>
+                        <div className="bg-white/80 backdrop-blur-2xl border border-white/40 p-6 rounded-3xl shadow-2xl mb-6">
+                            <h3 className="text-lg font-bold text-gray-800 mb-4">Add New User Type</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <input
                                     type="text"
                                     placeholder="User Type Name"
                                     value={newUserType.name}
                                     onChange={(e) => setNewUserType({ ...newUserType, name: e.target.value })}
-                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fc8019] hover:border-[#ff4d2d]/60 transition-all"
                                 />
                                 <input
                                     type="text"
                                     placeholder="Description"
                                     value={newUserType.description}
                                     onChange={(e) => setNewUserType({ ...newUserType, description: e.target.value })}
-                                    className="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="border border-gray-300 rounded-xl px-4 py-2.5 bg-white/80 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#fc8019] hover:border-[#ff4d2d]/60 transition-all"
                                 />
                             </div>
                             <div className="mt-4 flex items-center">
@@ -840,16 +846,16 @@ const SuperAdminDashboard = () => {
                                     id="deliveryAllowed"
                                     checked={newUserType.deliveryAllowed}
                                     onChange={(e) => setNewUserType({ ...newUserType, deliveryAllowed: e.target.checked })}
-                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                    className="h-5 w-5 text-[#fc8019] focus:ring-[#fc8019] border-gray-300 rounded"
                                 />
-                                <label htmlFor="deliveryAllowed" className="ml-2 block text-sm text-gray-900">
+                                <label htmlFor="deliveryAllowed" className="ml-3 block text-sm font-semibold text-gray-700">
                                     Allow Delivery for this User Type
                                 </label>
                             </div>
                             <button
                                 onClick={createUserType}
                                 disabled={loading}
-                                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+                                className="mt-4 bg-gradient-to-r from-[#fc8019] to-[#ff2b85] text-white px-6 py-3 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200 disabled:opacity-60"
                             >
                                 Add User Type
                             </button>
@@ -857,20 +863,20 @@ const SuperAdminDashboard = () => {
 
                         {/* User Types List */}
                         {loading ? (
-                            <div className="text-center py-4">Loading...</div>
+                            <div className="text-center py-8 text-gray-600 font-medium">Loading...</div>
                         ) : userTypes.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500">No user types found</div>
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 rounded-3xl shadow-2xl p-8 text-center text-gray-600 font-medium">No user types found</div>
                         ) : (
-                            <div className="bg-white shadow overflow-hidden sm:rounded-md">
-                                <ul className="divide-y divide-gray-200">
+                            <div className="bg-white/80 backdrop-blur-2xl border border-white/40 shadow-2xl overflow-hidden rounded-3xl">
+                                <ul className="divide-y divide-gray-200/50">
                                     {userTypes.map((userType) => (
-                                        <li key={userType._id} className="px-6 py-4">
+                                        <li key={userType._id} className="px-6 py-5 hover:bg-white/50 transition-colors">
                                             <div className="flex items-center justify-between">
                                                 <div>
-                                                    <h3 className="text-lg font-medium text-gray-900">{userType.name}</h3>
-                                                    <p className="text-sm text-gray-500">{userType.description}</p>
-                                                    <div className="mt-2">
-                                                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                                    <h3 className="text-lg font-bold text-gray-900">{userType.name}</h3>
+                                                    <p className="text-sm text-gray-600 mt-1">{userType.description}</p>
+                                                    <div className="mt-3">
+                                                        <span className={`px-3 py-1.5 text-xs font-bold rounded-full shadow-sm ${
                                                             userType.deliveryAllowed 
                                                                 ? 'bg-green-100 text-green-800' 
                                                                 : 'bg-red-100 text-red-800'
@@ -879,13 +885,13 @@ const SuperAdminDashboard = () => {
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="flex space-x-2">
+                                                <div className="flex space-x-3">
                                                     <button
                                                         onClick={() => updateUserTypeDelivery(userType._id, !userType.deliveryAllowed)}
-                                                        className={`px-4 py-2 rounded-lg text-white ${
+                                                        className={`px-5 py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200 text-white ${
                                                             userType.deliveryAllowed 
-                                                                ? 'bg-red-600 hover:bg-red-700' 
-                                                                : 'bg-green-600 hover:bg-green-700'
+                                                                ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700' 
+                                                                : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700'
                                                         }`}
                                                         disabled={loading}
                                                     >
@@ -893,7 +899,7 @@ const SuperAdminDashboard = () => {
                                                     </button>
                                                     <button
                                                         onClick={() => deleteUserType(userType._id)}
-                                                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+                                                        className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-md hover:shadow-lg hover:scale-[1.03] transition-all duration-200"
                                                         disabled={loading}
                                                     >
                                                         Delete
