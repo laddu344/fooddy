@@ -22,7 +22,7 @@ const app=express()
 const server=http.createServer(app)
 
 // Allow common Vite dev ports and make 5180 explicit
-const envAllowed = (process.env.ALLOWED_ORIGINS || "").split(",").map(s => s.trim()).filter(Boolean)
+const envAllowed = (process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL).split(",").map(s => s.trim()).filter(Boolean)
 const defaultAllowed = [
   "http://localhost:5173",
   "http://localhost:5174",

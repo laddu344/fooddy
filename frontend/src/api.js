@@ -1,10 +1,10 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000',
+  baseURL: import.meta.env.VITE_REACT_APP_API_URL,
   withCredentials: true
 })
-export const serverUrl = 'http://localhost:5000'
+export const serverUrl = import.meta.env.VITE_REACT_APP_API_URL
 
 // Helper to attach token if available
 api.interceptors.request.use((config) => {
