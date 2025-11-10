@@ -118,7 +118,7 @@ const SuperAdminDashboard = () => {
         try {
             setLoading(true);
             await superAdminAPI.updateDeliveryBoyStatus(userId, action);
-            showMessage(Delivery boy ${action}d successfully);
+            showMessage(`Delivery boy ${action}d successfully`);
             fetchPendingDeliveryBoys(); // Refresh the list
             fetchDashboardStats(); // Refresh stats
         } catch (error) {
@@ -134,7 +134,7 @@ const SuperAdminDashboard = () => {
         try {
             setLoading(true);
             await superAdminAPI.updateOwnerStatus(userId, action);
-            showMessage(Owner ${action}d successfully);
+            showMessage(`Owner ${action}d successfully`);
             fetchPendingOwners(); // Refresh the list
             fetchDashboardStats(); // Refresh stats
         } catch (error) {
@@ -361,7 +361,7 @@ const SuperAdminDashboard = () => {
         try {
             setLoading(true);
             await superAdminAPI.updateUserTypeDelivery(userTypeId, deliveryAllowed);
-            showMessage(Delivery ${deliveryAllowed ? 'enabled' : 'disabled'} successfully);
+            showMessage(`Delivery ${deliveryAllowed ? 'enabled' : 'disabled'} successfully`);
             fetchUserTypes(); // Refresh the list
         } catch (error) {
             console.error('Error updating user type delivery:', error);
