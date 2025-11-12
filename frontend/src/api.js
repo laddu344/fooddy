@@ -1,12 +1,13 @@
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_REACT_APP_API_URL,
-  withCredentials: true,
-});
+// --------------------- Base API URL ---------------------
+const API_BASE = "https://9264vk6u1k.execute-api.us-east-1.amazonaws.com/dev"; // Your API Gateway URL
 
-// Export base URL for custom use
-export const serverUrl = import.meta.env.VITE_REACT_APP_API_URL;
+// --------------------- Axios instance ---------------------
+const api = axios.create({
+  baseURL: API_BASE,
+  withCredentials: true, // Send cookies automatically
+});
 
 // Add Authorization header if token exists
 api.interceptors.request.use((config) => {
@@ -39,7 +40,6 @@ export const userAPI = {
 // --------------------- Shop API ---------------------
 export const shopAPI = {
   addOrEdit: (formData) => api.post('/api/shop/create-edit', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
-  createEdit: (formData) => api.post('/api/shop/create-edit', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   getMy: () => api.get('/api/shop/get-my'),
   updateStatus: (isOpen) => api.put('/api/shop/update-status', { isOpen }),
 };
