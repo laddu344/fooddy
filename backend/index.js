@@ -17,11 +17,16 @@ import { autoRegenerateOtps } from "./controllers/order.controllers.js";
 
 const app = express();
 
-// ✅ MongoDB connection (only once)
+// ✅ Connect to MongoDB (only once)
 connectDb();
 
 // ------------------ CORS SETUP ------------------
-const envAllowed = (process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL || "").split(",").map(s => s.trim()).filter(Boolean);
+const envAllowed = (
+  process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL || ""
+)
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
 
 const defaultAllowed = [
   "http://localhost:5173",
@@ -32,26 +37,36 @@ const defaultAllowed = [
   "http://127.0.0.1:5174",
   "http://127.0.0.1:5175",
   "http://127.0.0.1:5180",
+
+  // ✅ API Gateway URL
   "https://zzs6141xjh.execute-api.us-east-1.amazonaws.com/dev",
+
+  // ✅ S3 Frontend hosting URL
+  "http://foody-backend-lambda-dev-serverlessdeploymentbucke-qoqvzstuy6zz.s3-website-us-east-1.amazonaws.com",
   "http://foodway-frontend-dev.s3-website-us-east-1.amazonaws.com",
 ];
 
 const allowedOrigins = envAllowed.length ? envAllowed : defaultAllowed;
 
-const isLocalDev = (o) => /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(o);
+const isLocalDev = (origin) =>
+  /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin) || isLocalDev(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error("Not allowed by CORS"));
-  },
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // Allow Postman/mobile apps
+      if (allowedOrigins.includes(origin) || isLocalDev(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("CORS not allowed"));
+    },
+    credentials: true,
+  })
+);
 
 app.options("*", cors());
+
+// ------------------ MIDDLEWARES ------------------
 app.use(express.json());
 app.use(cookieParser());
 
@@ -79,5 +94,5 @@ if (process.env.NODE_ENV !== "lambda") {
   });
 }
 
-// Export app for AWS Lambda handler
+// ✅ Export app for AWS Lambda handler
 export default app;
