@@ -1,9 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
-dotenv.config();
 import connectDb from "./config/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import cron from "node-cron";
+
+// Routers
 import authRouter from "./routes/auth.routes.js";
 import userRouter from "./routes/user.routes.js";
 import superadminRouter from "./routes/superadmin.routes.js";
@@ -12,23 +14,24 @@ import shopRouter from "./routes/shop.routes.js";
 import orderRouter from "./routes/order.routes.js";
 import categoryRouter from "./routes/category.routes.js";
 import ratingRouter from "./routes/rating.routes.js";
-import cron from "node-cron";
+
+// Controllers
 import { autoRegenerateOtps } from "./controllers/order.controllers.js";
 
+dotenv.config();
 const app = express();
 
-// ✅ Connect to MongoDB (only once)
-connectDb();
+// ------------------ Connect to MongoDB ------------------
+connectDb(); // only once
 
 // ------------------ CORS SETUP ------------------
-const envAllowed = (
-  process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL || ""
-)
+const envAllowed = (process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL || "")
   .split(",")
   .map((s) => s.trim())
   .filter(Boolean);
 
 const defaultAllowed = [
+  // Local dev
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:5175",
@@ -38,10 +41,10 @@ const defaultAllowed = [
   "http://127.0.0.1:5175",
   "http://127.0.0.1:5180",
 
-  // ✅ API Gateway URL
-  "https://zzs6141xjh.execute-api.us-east-1.amazonaws.com/dev",
+  // API Gateway
+  "https://9264vk6u1k.execute-api.us-east-1.amazonaws.com/dev",
 
-  // ✅ S3 Frontend hosting URL
+  // S3 Frontend
   "http://foody-backend-lambda-dev-serverlessdeploymentbucke-qoqvzstuy6zz.s3-website-us-east-1.amazonaws.com",
 ];
 
@@ -53,7 +56,7 @@ const isLocalDev = (origin) =>
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // Allow Postman/mobile apps
+      if (!origin) return callback(null, true); // allow Postman, mobile apps
       if (allowedOrigins.includes(origin) || isLocalDev(origin)) {
         return callback(null, true);
       }
@@ -63,7 +66,7 @@ app.use(
   })
 );
 
-app.options("*", cors());
+app.options("*", cors()); // preflight requests
 
 // ------------------ MIDDLEWARES ------------------
 app.use(express.json());
@@ -85,13 +88,19 @@ cron.schedule("0 */2 * * *", () => {
   autoRegenerateOtps();
 });
 
-// ------------------ LOCAL DEV MODE ------------------
+// ------------------ GLOBAL ERROR HANDLER ------------------
+app.use((err, req, res, next) => {
+  console.error("Global error:", err);
+  res.status(500).json({ message: err.message || "Internal server error" });
+});
+
+// ------------------ START SERVER (Local only) ------------------
 if (process.env.NODE_ENV !== "lambda") {
-  const port = process.env.PORT || 5000;
-  app.listen(port, () => {
-    console.log(`🚀 Server started locally at port ${port}`);
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`🚀 Server running locally on port ${PORT}`);
   });
 }
 
-// ✅ Export app for AWS Lambda handler
+// ✅ Export app for AWS Lambda
 export default app;
