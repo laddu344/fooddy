@@ -1,11 +1,14 @@
-import axios from 'axios'
+import axios from 'axios';
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_REACT_APP_API_URL,
   withCredentials: true,
 });
 
+// Export base URL for custom use
 export const serverUrl = import.meta.env.VITE_REACT_APP_API_URL;
 
+// Add Authorization header if token exists
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -14,7 +17,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Auth API calls
+// --------------------- Auth API ---------------------
 export const authAPI = {
   signup: (data) => api.post('/api/auth/signup', data),
   signin: (data) => api.post('/api/auth/signin', data),
@@ -24,36 +27,27 @@ export const authAPI = {
   resetPassword: (email, newPassword) => api.post('/api/auth/reset-password', { email, newPassword }),
   googleAuth: (data) => api.post('/api/auth/google-auth', data),
   getUserTypes: () => api.get('/api/auth/user-types'),
-}
+};
 
-// User API calls
+// --------------------- User API ---------------------
 export const userAPI = {
   getCurrentUser: () => api.get('/api/user/current'),
   updateLocation: (lat, lon) => api.post('/api/user/update-location', { lat, lon }),
   setActive: (isActive) => api.put('/api/user/set-active', { isActive }),
-}
+};
 
-// Shop API calls
+// --------------------- Shop API ---------------------
 export const shopAPI = {
-  addOrEdit: (formData) => api.post('/api/shop/create-edit', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
-  // Alias for components expecting createEdit()
-  createEdit: (formData) => api.post('/api/shop/create-edit', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
+  addOrEdit: (formData) => api.post('/api/shop/create-edit', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  createEdit: (formData) => api.post('/api/shop/create-edit', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   getMy: () => api.get('/api/shop/get-my'),
   updateStatus: (isOpen) => api.put('/api/shop/update-status', { isOpen }),
 };
 
-// Item API calls
+// --------------------- Item API ---------------------
 export const itemAPI = {
-  addItem: (formData) => api.post('/api/item/add-item', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
-  editItem: (itemId, formData) => api.post(`/api/item/edit-item/${itemId}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
+  addItem: (formData) => api.post('/api/item/add-item', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  editItem: (itemId, formData) => api.post(`/api/item/edit-item/${itemId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   getById: (itemId) => api.get(`/api/item/get-by-id/${itemId}`),
   getByCity: (city, params) => api.get(`/api/item/get-by-city/${city}`, { params }),
   getByShop: (shopId) => api.get(`/api/item/get-by-shop/${shopId}`),
@@ -62,7 +56,7 @@ export const itemAPI = {
   searchItems: (query, city) => api.get(`/api/item/search-items?query=${query}&city=${city}`),
 };
 
-// Order API calls
+// --------------------- Order API ---------------------
 export const orderAPI = {
   placeOrder: (orderData) => api.post('/api/order/place-order', orderData),
   verifyPayment: (paymentData) => api.post('/api/order/verify-payment', paymentData),
@@ -82,7 +76,7 @@ export const orderAPI = {
   getDeliveriesByDate: (year, month, day) => api.get('/api/order/get-deliveries-by-date', { params: { year, month, day } }),
 };
 
-// Rating API calls
+// --------------------- Rating API ---------------------
 export const ratingAPI = {
   getShopRatings: () => api.get('/api/rating/shop/my'),
   getDeliveryRatings: () => api.get('/api/rating/delivery/my'),
@@ -90,12 +84,12 @@ export const ratingAPI = {
   submitRating: (ratingData) => api.post('/api/rating/submit', ratingData),
 };
 
-// Categories API calls
+// --------------------- Categories API ---------------------
 export const categoryAPI = {
   getCategories: () => api.get('/api/categories'),
 };
 
-// Super Admin API calls
+// --------------------- Super Admin API ---------------------
 export const superAdminAPI = {
   getDashboardStats: () => api.get('/api/superadmin/dashboard-stats'),
   getPendingDeliveryBoys: () => api.get('/api/superadmin/pending-deliveryboys'),
@@ -103,13 +97,9 @@ export const superAdminAPI = {
   updateDeliveryBoyStatus: (userId, action) => api.post('/api/superadmin/update-deliveryboy-status', { userId, action }),
   updateOwnerStatus: (userId, action) => api.post('/api/superadmin/update-owner-status', { userId, action }),
   getCategories: () => api.get('/api/superadmin/categories'),
-  createCategory: (formData) => api.post('/api/superadmin/categories', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
+  createCategory: (formData) => api.post('/api/superadmin/categories', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   deleteCategory: (categoryId) => api.delete(`/api/superadmin/categories/${categoryId}`),
-  updateCategory: (categoryId, formData) => api.put(`/api/superadmin/categories/${categoryId}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
+  updateCategory: (categoryId, formData) => api.put(`/api/superadmin/categories/${categoryId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
   getUsers: (params) => api.get(`/api/superadmin/users?${params.toString()}`),
   getUserTypes: () => api.get('/api/superadmin/user-types'),
   createUserType: (newUserType) => api.post('/api/superadmin/user-types', newUserType),
@@ -117,5 +107,10 @@ export const superAdminAPI = {
   deleteUserType: (userTypeId) => api.delete(`/api/superadmin/user-types/${userTypeId}`),
 };
 
-// Export the configured axios instance for custom requests
+// --------------------- Ping API ---------------------
+export const pingAPI = {
+  check: () => api.get('/ping'),
+};
+
+// --------------------- Export Axios instance ---------------------
 export default api;
