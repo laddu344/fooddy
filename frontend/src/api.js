@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // --------------------- Base API URL ---------------------
-const API_BASE = "https://9264vk6u1k.execute-api.us-east-1.amazonaws.com/dev"; // Your API Gateway URL
+const API_BASE = "https://9264vk6u1k.execute-api.us-east-1.amazonaws.com/dev";
 
 // --------------------- Axios instance ---------------------
 const api = axios.create({
