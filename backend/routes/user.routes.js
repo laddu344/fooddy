@@ -1,11 +1,13 @@
-import express from "express"
-import { getCurrentUser, updateUserLocation, updateActiveStatus } from "../controllers/user.controllers.js"
-import isAuth from "../middlewares/isAuth.js"
+import express from "express";
+import isAuth from "../middlewares/isAuth.js";
+import { asyncHandler } from "../middlewares/asyncHandler.js";
+import { getCurrentUser, updateUserLocation, updateActiveStatus } from "../controllers/user.controllers.js";
 
+const userRouter = express.Router();
 
-const userRouter=express.Router()
+// Use asyncHandler to catch errors from async controllers
+userRouter.get("/current", isAuth, asyncHandler(getCurrentUser));
+userRouter.post("/update-location", isAuth, asyncHandler(updateUserLocation));
+userRouter.put("/set-active", isAuth, asyncHandler(updateActiveStatus));
 
-userRouter.get("/current",isAuth,getCurrentUser)
-userRouter.post('/update-location',isAuth,updateUserLocation)
-userRouter.put('/set-active',isAuth,updateActiveStatus)
-export default userRouter
+export default userRouter;
