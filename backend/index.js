@@ -1,28 +1,28 @@
-import express from "express"
-import dotenv from "dotenv"
-dotenv.config()
-import connectDb from "./config/db.js"
-import cookieParser from "cookie-parser"
-import authRouter from "./routes/auth.routes.js"
-import cors from "cors"
-import userRouter from "./routes/user.routes.js"
-import superadminRouter from "./routes/superadmin.routes.js"
-import itemRouter from "./routes/item.routes.js"
-import shopRouter from "./routes/shop.routes.js"
-import orderRouter from "./routes/order.routes.js"
-import categoryRouter from "./routes/category.routes.js"
-import ratingRouter from "./routes/rating.routes.js"
-import http from "http"
-import { Server } from "socket.io"
-import { socketHandler } from "./socket.js"
-import cron from "node-cron"
-import { autoRegenerateOtps } from "./controllers/order.controllers.js"
+import express from "express";
+import dotenv from "dotenv";
+dotenv.config();
+import connectDb from "./config/db.js";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import authRouter from "./routes/auth.routes.js";
+import userRouter from "./routes/user.routes.js";
+import superadminRouter from "./routes/superadmin.routes.js";
+import itemRouter from "./routes/item.routes.js";
+import shopRouter from "./routes/shop.routes.js";
+import orderRouter from "./routes/order.routes.js";
+import categoryRouter from "./routes/category.routes.js";
+import ratingRouter from "./routes/rating.routes.js";
+import cron from "node-cron";
+import { autoRegenerateOtps } from "./controllers/order.controllers.js";
 
-const app=express()
-const server=http.createServer(app)
+const app = express();
 
-// Allow common Vite dev ports and make 5180 explicit
-const envAllowed = (process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL).split(",").map(s => s.trim()).filter(Boolean)
+// ✅ MongoDB connection (only once)
+connectDb();
+
+// ------------------ CORS SETUP ------------------
+const envAllowed = (process.env.ALLOWED_ORIGINS || process.env.FRONTEND_URL || "").split(",").map(s => s.trim()).filter(Boolean);
+
 const defaultAllowed = [
   "http://localhost:5173",
   "http://localhost:5174",
@@ -32,66 +32,52 @@ const defaultAllowed = [
   "http://127.0.0.1:5174",
   "http://127.0.0.1:5175",
   "http://127.0.0.1:5180",
-]
-const allowedOrigins = envAllowed.length ? envAllowed : defaultAllowed
-const io=new Server(server,{
-   cors:{
-    origin: allowedOrigins,
-    credentials:true,
-    methods:['POST','GET']
-}
-})
+  "https://zzs6141xjh.execute-api.us-east-1.amazonaws.com/dev",
+  "http://foodway-frontend-dev.s3-website-us-east-1.amazonaws.com",
+];
 
-app.set("io",io)
+const allowedOrigins = envAllowed.length ? envAllowed : defaultAllowed;
 
-// Middleware to attach socket.io to request object
-app.use((req, res, next) => {
-    req.io = io
-    next()
-})
-
-const port=process.env.PORT || 5000
-const isLocalDev = (o) => {
-  try {
-    return /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(o)
-  } catch {
-    return false
-  }
-}
+const isLocalDev = (o) => /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(o);
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
-    if (!origin) return callback(null, true)
+    if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin) || isLocalDev(origin)) {
-      return callback(null, true)
+      return callback(null, true);
     }
-    return callback(new Error('Not allowed by CORS'))
+    return callback(new Error("Not allowed by CORS"));
   },
-  credentials: true
-}))
-app.options('*', cors()); 
+  credentials: true,
+}));
+
+app.options("*", cors());
 app.use(express.json());
 app.use(cookieParser());
-app.use("/api/auth",authRouter)
-app.use("/api/user",userRouter)
-app.use("/api/superadmin",superadminRouter)
-app.use("/api/shop",shopRouter)
-app.use("/api/item",itemRouter)
-app.use("/api/order",orderRouter)
-app.use("/api/categories",categoryRouter)
-app.use("/api/rating",ratingRouter)
 
-socketHandler(io)
+// ------------------ ROUTES ------------------
+app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
+app.use("/api/superadmin", superadminRouter);
+app.use("/api/shop", shopRouter);
+app.use("/api/item", itemRouter);
+app.use("/api/order", orderRouter);
+app.use("/api/categories", categoryRouter);
+app.use("/api/rating", ratingRouter);
 
-// Schedule OTP regeneration every 2 hours
-cron.schedule('0 */2 * * *', () => {
-    console.log('Running automatic OTP regeneration...')
-    autoRegenerateOtps()
-})
+// ------------------ CRON JOBS ------------------
+cron.schedule("0 */2 * * *", () => {
+  console.log("⏰ Running automatic OTP regeneration...");
+  autoRegenerateOtps();
+});
 
-server.listen(port,()=>{
-    connectDb()
-    console.log(`server started at ${port}`)
-})
+// ------------------ LOCAL DEV MODE ------------------
+if (process.env.NODE_ENV !== "lambda") {
+  const port = process.env.PORT || 5000;
+  app.listen(port, () => {
+    console.log(`🚀 Server started locally at port ${port}`);
+  });
+}
 
+// Export app for AWS Lambda handler
+export default app;
