@@ -43,7 +43,6 @@ const defaultAllowed = [
 
   // ✅ S3 Frontend hosting URL
   "http://foody-backend-lambda-dev-serverlessdeploymentbucke-qoqvzstuy6zz.s3-website-us-east-1.amazonaws.com",
-  "http://foodway-frontend-dev.s3-website-us-east-1.amazonaws.com",
 ];
 
 const allowedOrigins = envAllowed.length ? envAllowed : defaultAllowed;
