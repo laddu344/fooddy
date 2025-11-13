@@ -1,6 +1,6 @@
 import express from "express";
 import isAuth from "../middlewares/isAuth.js";
-import { asyncHandler } from "../middlewares/asyncHandler.js";
+import asyncHandler from "../middlewares/asyncHandler.js"; // default import
 import { getCurrentUser, updateUserLocation, updateActiveStatus } from "../controllers/user.controllers.js";
 
 const userRouter = express.Router();
