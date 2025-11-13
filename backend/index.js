@@ -21,86 +21,76 @@ import { autoRegenerateOtps } from "./controllers/order.controllers.js";
 dotenv.config();
 const app = express();
 
-// ------------------ MIDDLEWARES ------------------
-app.use(express.json());
-app.use(cookieParser());
-
-// ------------------ CORS SETUP ------------------
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
-  .split(",")
-  .map((s) => s.trim())
-  .filter(Boolean);
-
-// Allow localhost for development
-const localOrigins = [
-  "http://localhost:5173",
-  "http://localhost:5174",
-  "http://localhost:5175",
-  "http://localhost:5180",
-  "http://127.0.0.1:5173",
-  "http://127.0.0.1:5174",
-  "http://127.0.0.1:5175",
-  "http://127.0.0.1:5180",
-];
-
-const isLocalDev = (origin) =>
-  /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
-
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // allow Postman / mobile apps
-      if (allowedOrigins.includes(origin) || isLocalDev(origin)) {
-        return callback(null, true);
-      }
-      return callback(new Error("CORS not allowed"));
-    },
-    credentials: true,
-  })
-);
-app.options("*", cors()); // preflight
-
-// ------------------ ROUTES ------------------
-app.use("/api/auth", authRouter);
-app.use("/api/user", userRouter);
-app.use("/api/superadmin", superadminRouter);
-app.use("/api/shop", shopRouter);
-app.use("/api/item", itemRouter);
-app.use("/api/order", orderRouter);
-app.use("/api/categories", categoryRouter);
-app.use("/api/rating", ratingRouter);
-
-// ------------------ CRON JOBS ------------------
-cron.schedule("0 */2 * * *", () => {
-  console.log("⏰ Running automatic OTP regeneration...");
-  autoRegenerateOtps();
-});
-
-// ------------------ GLOBAL ERROR HANDLER ------------------
-app.use((err, req, res, next) => {
-  console.error("Global error:", err.message || err);
-  res.status(500).json({ message: err.message || "Internal server error" });
-});
-
-// ------------------ SERVER START ------------------
+// ------------------ CONNECT TO MONGO ------------------
 const startServer = async () => {
   try {
     await connectDb();
     console.log("✅ MongoDB connected successfully");
 
+    // ------------------ CORS SETUP ------------------
+    const allowedOrigins = [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "https://9264vk6u1k.execute-api.us-east-1.amazonaws.com/dev", // API Gateway frontend
+      "http://foody-backend-lambda-dev-serverlessdeploymentbucke-qoqvzstuy6zz.s3-website-us-east-1.amazonaws.com", // S3 frontend
+    ];
+
+    const isLocalDev = (origin) => /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
+
+    app.use(
+      cors({
+        origin: (origin, callback) => {
+          if (!origin) return callback(null, true); // allow Postman or mobile
+          if (allowedOrigins.includes(origin) || isLocalDev(origin)) {
+            return callback(null, true);
+          }
+          return callback(new Error("CORS not allowed"));
+        },
+        credentials: true,
+      })
+    );
+    app.options("*", cors());
+
+    // ------------------ MIDDLEWARES ------------------
+    app.use(express.json());
+    app.use(cookieParser());
+
+    // ------------------ ROUTES ------------------
+    app.use("/api/auth", authRouter);
+    app.use("/api/user", userRouter);
+    app.use("/api/superadmin", superadminRouter);
+    app.use("/api/shop", shopRouter);
+    app.use("/api/item", itemRouter);
+    app.use("/api/order", orderRouter);
+    app.use("/api/categories", categoryRouter);
+    app.use("/api/rating", ratingRouter);
+
+    // ------------------ CRON JOBS ------------------
+    cron.schedule("0 */2 * * *", () => {
+      console.log("⏰ Running automatic OTP regeneration...");
+      autoRegenerateOtps();
+    });
+
+    // ------------------ GLOBAL ERROR HANDLER ------------------
+    app.use((err, req, res, next) => {
+      console.error("Global error:", err.message || err);
+      res.status(500).json({ message: err.message || "Internal server error" });
+    });
+
+    // ------------------ START SERVER (LOCAL DEV ONLY) ------------------
     if (process.env.NODE_ENV !== "lambda") {
       const PORT = process.env.PORT || 5000;
-      app.listen(PORT, () =>
-        console.log(`🚀 Server running locally on port ${PORT}`)
-      );
+      app.listen(PORT, () => {
+        console.log(`🚀 Server running locally on port ${PORT}`);
+      });
     }
   } catch (err) {
-    console.error("❌ Server startup failed:", err.message || err);
+    console.error("❌ Server startup failed:", err.message);
     process.exit(1);
   }
 };
 
 startServer();
 
-// ✅ Export for Lambda / testing
+// Export app for Lambda
 export default app;
