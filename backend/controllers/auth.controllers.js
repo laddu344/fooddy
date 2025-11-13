@@ -9,6 +9,7 @@ const handleError = (res, message, error = null, status = 500) => {
   return res.status(status).json({ message });
 };
 
+// ------------------ SIGNUP ------------------
 export const signUp = async (req, res) => {
   try {
     const { fullName, email, password, mobile, role, userType } = req.body;
@@ -51,6 +52,7 @@ export const signUp = async (req, res) => {
   }
 };
 
+// ------------------ SIGNIN ------------------
 export const signIn = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -78,6 +80,7 @@ export const signIn = async (req, res) => {
   }
 };
 
+// ------------------ SIGNOUT ------------------
 export const signOut = async (req, res) => {
   try {
     res.clearCookie("token");
@@ -87,6 +90,7 @@ export const signOut = async (req, res) => {
   }
 };
 
+// ------------------ SEND OTP ------------------
 export const sendOtp = async (req, res) => {
   try {
     const { email } = req.body;
@@ -119,6 +123,7 @@ export const sendOtp = async (req, res) => {
   }
 };
 
+// ------------------ VERIFY OTP ------------------
 export const verifyOtp = async (req, res) => {
   try {
     const { email, otp } = req.body;
@@ -136,6 +141,7 @@ export const verifyOtp = async (req, res) => {
   }
 };
 
+// ------------------ RESET PASSWORD ------------------
 export const resetPassword = async (req, res) => {
   try {
     const { email, newPassword } = req.body;
@@ -151,6 +157,7 @@ export const resetPassword = async (req, res) => {
   }
 };
 
+// ------------------ GOOGLE AUTH ------------------
 export const googleAuth = async (req, res) => {
   try {
     const { fullName, email, role, mobile, userType } = req.body;
@@ -190,5 +197,15 @@ export const googleAuth = async (req, res) => {
 
   } catch (error) {
     return handleError(res, "Google auth failed.", error);
+  }
+};
+
+// ------------------ GET PROFILE ------------------
+export const getProfileController = async (req, res) => {
+  try {
+    // req.user is set by isAuth middleware
+    res.status(200).json({ user: req.user });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error });
   }
 };
