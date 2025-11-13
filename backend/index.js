@@ -1,3 +1,4 @@
+// index.js
 import express from "express";
 import dotenv from "dotenv";
 import connectDb from "./config/db.js";
@@ -21,7 +22,7 @@ import { autoRegenerateOtps } from "./controllers/order.controllers.js";
 dotenv.config();
 const app = express();
 
-// ------------------ CONNECT DB ------------------
+// ------------------ CONNECT TO MONGODB ------------------
 const startServer = async () => {
   try {
     await connectDb();
@@ -39,31 +40,33 @@ const startServer = async () => {
       "http://localhost:5175",
       "http://127.0.0.1:5173",
       "http://127.0.0.1:5174",
-      "http://127.0.0.1:5175",
       "https://9264vk6u1k.execute-api.us-east-1.amazonaws.com/dev",
       "http://foody-backend-lambda-dev-serverlessdeploymentbucke-qoqvzstuy6zz.s3-website-us-east-1.amazonaws.com",
     ];
 
     const allowedOrigins = envAllowed.length ? envAllowed : defaultAllowed;
+
     const isLocalDev = (origin) => /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
 
-    app.use(cors({
-      origin: (origin, callback) => {
-        if (!origin) return callback(null, true);
-        if (allowedOrigins.includes(origin) || isLocalDev(origin)) return callback(null, true);
-        return callback(new Error("CORS not allowed"));
-      },
-      credentials: true,
-    }));
+    app.use(
+      cors({
+        origin: function (origin, callback) {
+          if (!origin) return callback(null, true); // allow Postman, mobile apps
+          if (allowedOrigins.includes(origin) || isLocalDev(origin)) return callback(null, true);
+          return callback(new Error("CORS not allowed"));
+        },
+        credentials: true,
+      })
+    );
 
-    app.options("*", cors());
+    app.options("*", cors()); // preflight requests
 
     // ------------------ MIDDLEWARES ------------------
     app.use(express.json());
     app.use(cookieParser());
 
     // ------------------ ROUTES ------------------
-    app.use("/api/auth", authRouter);
+    app.use("/api/auth", authRouter);       // ✅ correct route path
     app.use("/api/user", userRouter);
     app.use("/api/superadmin", superadminRouter);
     app.use("/api/shop", shopRouter);
@@ -88,16 +91,17 @@ const startServer = async () => {
     if (process.env.NODE_ENV !== "lambda") {
       const PORT = process.env.PORT || 5000;
       app.listen(PORT, () => {
-        console.log(`🚀 Server running on port ${PORT}`);
+        console.log(`🚀 Server running locally on port ${PORT}`);
       });
     }
 
   } catch (err) {
-    console.error("❌ Server startup failed:", err.message);
+    console.error("❌ Server startup failed:", err);
     process.exit(1);
   }
 };
 
 startServer();
 
+// ✅ Export app for AWS Lambda
 export default app;
