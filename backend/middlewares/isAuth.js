@@ -1,3 +1,4 @@
+// backend/middlewares/isAuth.js
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import User from "../models/user.model.js";
@@ -29,13 +30,17 @@ const isAuth = async (req, res, next) => {
     try {
       decoded = jwt.verify(token, secret);
     } catch (err) {
-      if (err.name === "TokenExpiredError") return handleAuthError(res, "Token expired");
-      if (err.name === "JsonWebTokenError") return handleAuthError(res, "Invalid token");
+      if (err.name === "TokenExpiredError")
+        return handleAuthError(res, "Token expired");
+      if (err.name === "JsonWebTokenError")
+        return handleAuthError(res, "Invalid token");
       return handleAuthError(res, "Authentication error", err);
     }
 
     // 3️⃣ Fetch user from DB
-    const user = await User.findById(decoded.userId || decoded.id).select("-password");
+    const user = await User.findById(decoded.userId || decoded.id).select(
+      "-password"
+    );
     if (!user) return handleAuthError(res, "User not found", null, 404);
 
     // 4️⃣ Attach user to request
