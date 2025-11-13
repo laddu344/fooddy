@@ -21,7 +21,7 @@ import { autoRegenerateOtps } from "./controllers/order.controllers.js";
 dotenv.config();
 const app = express();
 
-// ------------------ MONGODB ------------------
+// ------------------ CONNECT DB ------------------
 const startServer = async () => {
   try {
     await connectDb();
@@ -45,24 +45,20 @@ const startServer = async () => {
     ];
 
     const allowedOrigins = envAllowed.length ? envAllowed : defaultAllowed;
+    const isLocalDev = (origin) => /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
 
-    const isLocalDev = (origin) =>
-      /^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin);
-
-    app.use(
-      cors({
-        origin: (origin, callback) => {
-          if (!origin) return callback(null, true);
-          if (allowedOrigins.includes(origin) || isLocalDev(origin)) return callback(null, true);
-          return callback(new Error("CORS not allowed"));
-        },
-        credentials: true,
-      })
-    );
+    app.use(cors({
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes(origin) || isLocalDev(origin)) return callback(null, true);
+        return callback(new Error("CORS not allowed"));
+      },
+      credentials: true,
+    }));
 
     app.options("*", cors());
 
-    // ------------------ MIDDLEWARE ------------------
+    // ------------------ MIDDLEWARES ------------------
     app.use(express.json());
     app.use(cookieParser());
 
@@ -76,14 +72,10 @@ const startServer = async () => {
     app.use("/api/categories", categoryRouter);
     app.use("/api/rating", ratingRouter);
 
-    // ------------------ CRON JOB ------------------
+    // ------------------ CRON JOBS ------------------
     cron.schedule("0 */2 * * *", () => {
-      try {
-        console.log("⏰ Running automatic OTP regeneration...");
-        autoRegenerateOtps();
-      } catch (err) {
-        console.error("Cron error:", err);
-      }
+      console.log("⏰ Running automatic OTP regeneration...");
+      autoRegenerateOtps();
     });
 
     // ------------------ GLOBAL ERROR HANDLER ------------------
@@ -95,10 +87,13 @@ const startServer = async () => {
     // ------------------ START SERVER ------------------
     if (process.env.NODE_ENV !== "lambda") {
       const PORT = process.env.PORT || 5000;
-      app.listen(PORT, () => console.log(`🚀 Server running locally on port ${PORT}`));
+      app.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+      });
     }
+
   } catch (err) {
-    console.error("❌ Server startup failed:", err);
+    console.error("❌ Server startup failed:", err.message);
     process.exit(1);
   }
 };
