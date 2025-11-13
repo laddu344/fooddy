@@ -22,7 +22,6 @@ orderRouter.get('/get-today-deliveries',isAuth,getTodayDeliveries)
 orderRouter.get('/delivery-counts',isAuth,getDeliveryCounts)
 orderRouter.get('/get-deliveries-by-date',isAuth,getDeliveriesByDate)
 orderRouter.delete('/delete-order/:orderId',isAuth,deleteOrder)
-orderRouter.post('/cancel-order/:orderId',isAuth,cancelOrder)
-orderRouter.put('/update-special-instructions/:orderId',isAuth,updateSpecialInstructions)
+orderRouter.post("/update-status/:orderId/:shopId",isAuth,updateOrderStatus)
 
 export default orderRouter
