@@ -3,12 +3,13 @@ import axios from "axios";
 // ------------------ BASE URL ------------------
 const API_BASE =
   import.meta.env.VITE_REACT_APP_API_URL ||
-  "https://9264vk6u1k.execute-api.us-east-1.amazonaws.com/dev"; // your API Gateway URL
+  "https://9264vk6u1k.execute-api.us-east-1.amazonaws.com/dev"; 
+// ✅ This must be your Lambda / API Gateway URL
 
 // ------------------ AXIOS INSTANCE ------------------
 const api = axios.create({
   baseURL: API_BASE,
-  withCredentials: true, // send cookies/auth headers if needed
+  withCredentials: true, // send cookies / auth headers if needed
 });
 
 // ------------------ REQUEST INTERCEPTOR ------------------
