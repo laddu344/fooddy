@@ -8,13 +8,22 @@ const connectDb = async () => {
     "mongodb+srv://rvprasad24790_db_user:ZiLWIMlk0bVyo66R@mangodb.du5iizp.mongodb.net/foodway?retryWrites=true&w=majority";
 
   try {
-    await mongoose.connect(mongoUri, {
+    mongoose.set("strictQuery", false);
+
+    const conn = await mongoose.connect(mongoUri, {
+      maxPoolSize: 10,              // ⏩ speeds up by limiting connections
+      minPoolSize: 5,               // keeps some connections ready
+      connectTimeoutMS: 10000,      // fail fast if cannot connect
+      socketTimeoutMS: 45000,       // prevents long socket waits
+      serverSelectionTimeoutMS: 10000, // avoid infinite waiting
+      family: 4,                    // use IPv4 (faster on many ISPs)
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log(`✅ MongoDB connected: ${mongoUri}`);
 
-    // Seed superadmin if not exists
+    console.log(`✅ MongoDB connected: ${conn.connection.host}`);
+
+    // 🧩 Seed superadmin if missing
     const existingAdmin = await User.findOne({ email: "superadmin@foodway.com" });
     if (!existingAdmin) {
       const bcrypt = (await import("bcryptjs")).default;
@@ -27,10 +36,10 @@ const connectDb = async () => {
         isApproved: true,
       });
       await admin.save();
-      console.log("Seeded superadmin: superadmin@foodway.com / superadmin123");
+      console.log("🧑‍💼 Seeded superadmin: superadmin@foodway.com / superadmin123");
     }
 
-    // Seed basic categories if empty
+    // 🍽️ Seed default categories if empty
     const categoriesCount = await Category.countDocuments();
     if (categoriesCount === 0) {
       await Category.create([
@@ -39,10 +48,10 @@ const connectDb = async () => {
         { name: "Desserts", description: "Sweet treats and desserts" },
         { name: "Beverages", description: "Drinks and refreshments" },
       ]);
-      console.log("Seeded basic categories");
+      console.log("🍴 Seeded basic categories");
     }
   } catch (error) {
-    console.error("❌ MongoDB connection failed:", error.message || error);
+    console.error(`❌ MongoDB connection failed: ${error.message}`);
     process.exit(1); // Stop app if DB connection fails
   }
 };
